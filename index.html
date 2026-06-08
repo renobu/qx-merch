@@ -98,8 +98,11 @@
     display:flex; flex-direction:column; transition:.18s; position:relative;
   }
   .card:hover{border-color:var(--accent); transform:translateY(-2px)}
-  .mockup{aspect-ratio:1/1; background:var(--mock); display:flex; align-items:center; justify-content:center; position:relative; border-bottom:1px solid var(--line)}
-  .mockup svg{width:74%; height:74%; display:block}
+  .mockup{aspect-ratio:1/1; background:radial-gradient(120% 120% at 50% 18%, #101317, #0a0c0f); display:flex; align-items:center; justify-content:center; position:relative; border-bottom:1px solid var(--line)}
+  [data-theme="light"] .mockup{background:radial-gradient(120% 120% at 50% 18%, #f7f5f2, #e9e6e1)}
+  .gw{position:relative; width:84%; aspect-ratio:1/1}
+  .gw svg{width:100%; height:100%; display:block}
+  .gw .pr{position:absolute; transform:translate(-50%,-50%); pointer-events:none}
   .badge{position:absolute; top:12px; left:12px; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
     color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:3px 9px; opacity:.9}
   .body{padding:16px 16px 18px; display:flex; flex-direction:column; gap:6px; flex:1}
@@ -162,8 +165,6 @@
 
   <div class="info" id="info"></div>
 
-  <div class="note" id="proto_note"></div>
-
   <footer>
     <span id="foot_rights"></span>
     <span><a href="lookbook.html">lookbook</a> · <a href="https://b.qx.kg/">b.qx.kg</a> · <a href="https://a.qx.kg/">a.qx.kg</a> · <a href="https://qx.kg/">qx.kg</a></span>
@@ -172,30 +173,34 @@
 
 <script>
 (function(){
-  // ── мокапы товаров. рисую силуэты в svg, чтобы витрина жила без фотографий.
-  //    позже заменим на реальные mockup-фото из POD (Printful/Gelato). ember-точка везде наша.
-  var EMBER='#f4702f', STK='currentColor';
-  function tee(){return '<svg viewBox="0 0 100 100" fill="none" stroke="'+STK+'" stroke-width="1.4" stroke-opacity=".55">\
-    <path d="M30 22 L20 30 L26 40 L31 36 L31 78 L69 78 L69 36 L74 40 L80 30 L70 22 L60 22 C60 28 40 28 40 22 Z"/>\
-    <circle cx="38" cy="44" r="2.4" fill="'+EMBER+'" stroke="none"/></svg>';}
-  function hoodie(){return '<svg viewBox="0 0 100 100" fill="none" stroke="'+STK+'" stroke-width="1.4" stroke-opacity=".55">\
-    <path d="M34 24 L20 32 L26 44 L32 40 L32 80 L68 80 L68 40 L74 44 L80 32 L66 24 C66 32 56 33 50 33 C44 33 34 32 34 24 Z"/>\
-    <path d="M40 24 C40 32 60 32 60 24" /><path d="M44 50 L44 64 L56 64 L56 50"/>\
-    <circle cx="39" cy="44" r="2.4" fill="'+EMBER+'" stroke="none"/></svg>';}
-  function sticker(){return '<svg viewBox="0 0 100 100" fill="none" stroke="'+STK+'" stroke-width="1.3" stroke-opacity=".5">\
-    <rect x="20" y="20" width="26" height="26" rx="5"/><rect x="54" y="20" width="26" height="26" rx="5"/>\
-    <rect x="20" y="54" width="26" height="26" rx="5"/><rect x="54" y="54" width="26" height="26" rx="5"/>\
-    <circle cx="33" cy="33" r="3" fill="'+EMBER+'" stroke="none"/>\
-    <path d="M61 30 q6 3 0 6 M73 30 q-6 3 0 6"/>\
-    <path d="M27 67 q3 -8 6 0 q3 8 6 0"/>\
-    <path d="M60 60 l8 14 M68 60 l-8 14"/></svg>';}
-  function mug(){return '<svg viewBox="0 0 100 100" fill="none" stroke="'+STK+'" stroke-width="1.4" stroke-opacity=".55">\
-    <rect x="28" y="32" width="36" height="40" rx="5"/>\
-    <path d="M64 40 h8 a7 7 0 0 1 0 18 h-8"/>\
-    <circle cx="37" cy="42" r="2.4" fill="'+EMBER+'" stroke="none"/>\
-    <path d="M36 60 h20" stroke-opacity=".3"/></svg>';}
+  // ── мокапы товаров: силуэт изделия + настоящий принт сверху (как в лукбуке).
+  //    тема витрины тёмная -> ткань тёмная, принты из designs/ (светлый колорвей).
+  var GFAB='#15181d', GEDGE='#33383f', INK='#ECECEC', EMBER='#f4702f';
+  function gTee(){return '<svg viewBox="0 0 200 200">'+
+    '<path d="M76 28 L44 44 L58 76 L72 66 L72 184 L128 184 L128 66 L142 76 L156 44 L124 28 '+
+    'C124 42 76 42 76 28 Z" fill="'+GFAB+'" stroke="'+GEDGE+'" stroke-width="1.6"/></svg>';}
+  function gHoodie(){return '<svg viewBox="0 0 200 200">'+
+    '<path d="M70 34 C70 54 130 54 130 34 L146 40 L168 56 L152 86 L140 78 L140 186 L60 186 L60 78 '+
+    'L48 86 L32 56 L54 40 Z" fill="'+GFAB+'" stroke="'+GEDGE+'" stroke-width="1.6"/>'+
+    '<path d="M70 34 C72 60 128 60 130 34" fill="none" stroke="'+GEDGE+'" stroke-width="1.4"/>'+
+    '<line x1="88" y1="52" x2="90" y2="74" stroke="'+GEDGE+'" stroke-width="1.4"/>'+
+    '<line x1="112" y1="52" x2="110" y2="74" stroke="'+GEDGE+'" stroke-width="1.4"/></svg>';}
+  function gMug(){return '<svg viewBox="0 0 200 200">'+
+    '<rect x="50" y="58" width="80" height="92" rx="10" fill="'+GFAB+'" stroke="'+GEDGE+'" stroke-width="1.6"/>'+
+    '<path d="M130 78 h14 a18 18 0 0 1 0 36 h-14" fill="none" stroke="'+GEDGE+'" stroke-width="1.6"/>'+
+    '<ellipse cx="90" cy="58" rx="40" ry="7" fill="none" stroke="'+GEDGE+'" stroke-width="1.4"/></svg>';}
+  // стикерпак: лист из мини-марок (единого файла принта нет, рисуем превью)
+  function gSticker(){
+    function cell(x,y,svg){return '<g transform="translate('+x+','+y+')">'+
+      '<rect x="0" y="0" width="74" height="74" rx="12" fill="none" stroke="'+GEDGE+'" stroke-width="1.4" stroke-dasharray="4 4"/>'+svg+'</g>';}
+    return '<svg viewBox="0 0 170 170">'+
+      cell(8,8,'<text x="37" y="46" text-anchor="middle" font-family="ui-monospace,monospace" font-size="30" font-weight="700" fill="'+INK+'">qx</text><circle cx="54" cy="26" r="5" fill="'+EMBER+'"/>')+
+      cell(88,8,'<circle cx="37" cy="37" r="24" fill="none" stroke="'+INK+'" stroke-opacity=".6" stroke-width="2"/><ellipse cx="37" cy="37" rx="24" ry="7" fill="none" stroke="'+INK+'" stroke-opacity=".35" stroke-width="1.3"/><line x1="37" y1="37" x2="54" y2="23" stroke="'+EMBER+'" stroke-width="2.2"/>')+
+      cell(8,88,'<line x1="14" y1="30" x2="60" y2="30" stroke="'+INK+'" stroke-opacity=".5" stroke-width="1.8"/><line x1="14" y1="48" x2="60" y2="48" stroke="'+INK+'" stroke-opacity=".5" stroke-width="1.8"/><line x1="37" y1="30" x2="37" y2="48" stroke="'+EMBER+'" stroke-width="2"/><circle cx="37" cy="30" r="4" fill="'+EMBER+'"/><circle cx="37" cy="48" r="8" fill="none" stroke="'+EMBER+'" stroke-width="2"/>')+
+      cell(88,88,'<text x="37" y="46" text-anchor="middle" font-family="ui-monospace,monospace" font-size="26" font-weight="700" fill="'+INK+'">&gt;_</text><rect x="48" y="26" width="9" height="18" fill="'+EMBER+'"/>')+
+      '</svg>';}
 
-  var MOCK={tee:tee, hoodie:hoodie, sticker:sticker, mug:mug};
+  var GAR={tee:gTee, hoodie:gHoodie, mug:gMug, sticker:gSticker};
 
   // ── PAYHIP: ключи товаров. ──────────────────────────────────────────────
   //  как заполнить: в Payhip заводишь товар (физический, с POD/Printful),
@@ -212,22 +217,22 @@
 
   // ── каталог. цены в USD (глобальная аудитория). mockup() позже заменим на фото из POD.
   var PRODUCTS=[
-    { id:"tee-qx", shape:"tee", price:"$29",
+    { id:"tee-qx", shape:"tee", price:"$29", print:"mark-qx.svg", place:{cx:37,cy:40,w:28},
       name:{ru:"Футболка «qx·»", en:"Tee «qx·»", zh:"T恤「qx·」"},
       slogan:{ru:"Моно-вордмарк и тлеющая точка. Минимализм, который не кричит.",
               en:"Mono wordmark and an ember dot. Minimal, doesn't shout.",
               zh:"等宽字标加余烬之点。低调，不喧哗。"} },
-    { id:"hoodie-chaos", shape:"hoodie", price:"$59", badge:"flagship",
+    { id:"hoodie-chaos", shape:"hoodie", price:"$59", badge:"flagship", print:"chaos-to-order.svg", place:{cx:50,cy:50,w:84},
       name:{ru:"Худи «порядок из хаоса»", en:"Hoodie «order from chaos»", zh:"连帽衫「从混沌到秩序」"},
       slogan:{ru:"Хаос частиц собирается в решётку. Трёхъязычно на всю спину.",
               en:"A field of chaos resolves into a lattice. Trilingual, full back.",
               zh:"一片混沌收拢成晶格。三语，整背。"} },
-    { id:"tee-entropy", shape:"tee", price:"$31", badge:"new",
+    { id:"tee-entropy", shape:"tee", price:"$31", badge:"new", print:"entropy.svg", place:{cx:50,cy:46,w:84},
       name:{ru:"Тишка «entropy always wins»", en:"Tee «entropy always wins»", zh:"T恤「entropy always wins」"},
       slogan:{ru:"Тёмный двойник флагмана: решётка рассыпается обратно в хаос.",
               en:"The flagship's dark twin: the lattice decays back into chaos.",
               zh:"旗舰的暗面：晶格重新崩解为混沌。"} },
-    { id:"tee-itworks", shape:"tee", price:"$29",
+    { id:"tee-itworks", shape:"tee", price:"$29", print:"it-works.svg", place:{cx:50,cy:47,w:64},
       name:{ru:"Тишка «it works. I don't care.»", en:"Tee «it works. I don't care.»", zh:"T恤「it works. I don't care.」"},
       slogan:{ru:"Мелко на рукаве. Цитата из комментария в исходниках qx.kg.",
               en:"Small on the sleeve. Pulled from a comment in the qx.kg source.",
@@ -237,7 +242,7 @@
       slogan:{ru:"Q#-каламбуры, спираль ДНК, still in superposition. Дёшево и заразно.",
               en:"Q# puns, a DNA helix, still in superposition. Cheap and contagious.",
               zh:"Q# 双关、DNA 螺旋、still in superposition。便宜又上头。"} },
-    { id:"mug-night", shape:"mug", price:"$19",
+    { id:"mug-night", shape:"mug", price:"$19", print:"mug-wrap.svg", place:{cx:90,cy:53,w:60},
       name:{ru:"Кружка «night / rain / backend»", en:"Mug «night / rain / backend»", zh:"马克杯「night / rain / backend」"},
       slogan:{ru:"Тёмная кружка, моно-текст по кругу. Товар про атмосферу.",
               en:"Dark mug, mono text around it. An atmosphere object.",
@@ -249,7 +254,7 @@
       tagline:"Тихий бунт для тех, кто пишет бэкенд ночью под дождём.",
       subline:"Backend / genetics / quantum. И немного злости на мир - теперь на одежде.",
       drop_h:"Дроп 01", drop_hint:"6 позиций · печать по заказу",
-      buy:"Купить", home:"← на qx.kg",
+      buy:"Купить", soon:"Скоро в продаже", home:"← на qx.kg",
       info:[ {h:"Печать по заказу", p:"Каждый предмет печатают и отправляют под твой заказ. Склада нет, лишнего тиража нет."},
              {h:"Доставка по миру", p:"Отправка из ближайшего цеха печати. Сроки и цена - на шаге оплаты."},
              {h:"Оплата картой", p:"Visa / Mastercard через защищённый checkout. Чек и трекинг - на почту."} ],
@@ -259,7 +264,7 @@
       tagline:"A quiet rebellion for those who write backend at night, in the rain.",
       subline:"Backend / genetics / quantum. And a bit of anger at the world - now on fabric.",
       drop_h:"Drop 01", drop_hint:"6 pieces · print on demand",
-      buy:"Buy", home:"← back to qx.kg",
+      buy:"Buy", soon:"Coming soon", home:"← back to qx.kg",
       info:[ {h:"Print on demand", p:"Every piece is printed and shipped per order. No warehouse, no overstock."},
              {h:"Worldwide shipping", p:"Shipped from the nearest print house. Time and cost shown at checkout."},
              {h:"Card payment", p:"Visa / Mastercard via secure checkout. Receipt and tracking by email."} ],
@@ -269,7 +274,7 @@
       tagline:"献给那些在雨夜写后端的人的一场安静叛逆。",
       subline:"Backend / genetics / quantum。以及对世界的一点怒气--现在穿在身上。",
       drop_h:"第 01 弹", drop_hint:"6 件 · 按需印制",
-      buy:"购买", home:"← 返回 qx.kg",
+      buy:"购买", soon:"即将上架", home:"← 返回 qx.kg",
       info:[ {h:"按需印制", p:"每件都按订单印制并发货。没有库存，没有多余的量。"},
              {h:"全球配送", p:"从最近的印厂发出。时效与运费在结账时显示。"},
              {h:"刷卡支付", p:"通过安全结账使用 Visa / Mastercard。收据与物流号发到邮箱。"} ],
@@ -287,7 +292,9 @@
     return "en";
   }
 
+  var curLang="en";
   function render(lang){
+    curLang=lang;
     var t=I18N[lang];
     document.documentElement.setAttribute("lang", t.htmlLang);
     document.title=t.title;
@@ -296,7 +303,6 @@
     document.getElementById("subline").textContent=t.subline;
     document.getElementById("drop_h").textContent=t.drop_h;
     document.getElementById("drop_hint").textContent=t.drop_hint;
-    document.getElementById("proto_note").textContent=t.proto;
     document.getElementById("foot_rights").textContent=t.rights.replace("{year}",year());
     document.getElementById("homelink").textContent=t.home;
 
@@ -313,8 +319,11 @@
       } else {
         buy='<a class="buy" href="#" data-id="'+p.id+'">'+t.buy+'</a>';
       }
+      var mk='<div class="gw">'+(GAR[p.shape]?GAR[p.shape]():'')+
+        (p.print?'<img class="pr" src="designs/'+p.print+'" alt="" style="left:'+p.place.cx+'%;top:'+p.place.cy+'%;width:'+p.place.w+'%">':'')+
+        '</div>';
       card.innerHTML=
-        '<div class="mockup">'+badge+(MOCK[p.shape]?MOCK[p.shape]():'')+'</div>'+
+        '<div class="mockup">'+badge+mk+'</div>'+
         '<div class="body">'+
           '<p class="pname">'+p.name[lang]+'</p>'+
           '<p class="pslogan">'+p.slogan[lang]+'</p>'+
@@ -344,7 +353,7 @@
     var a=e.target.closest(".buy"); if(!a) return;
     if(a.classList.contains("payhip-buy-button")) return; // пропускаем в Payhip
     e.preventDefault();
-    alert("Прототип: тут откроется оплата Payhip.\nВпиши ключ товара в конфиг PAYHIP, чтобы кнопка заработала.\nТовар: "+a.getAttribute("data-id"));
+    alert((I18N[curLang]||I18N.en).soon);
   });
 
   render(detect());
