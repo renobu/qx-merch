@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<!--
+  магазин. тот же мир что и на qx.kg: дождь, зерно, тлеющий оранжевый, немного злости.
+  это прототип витрины. оплаты тут пока нет - кнопки ведут на заглушку checkout.
+  фронт всё ещё не моё, я бэкендер. но мерч должен выглядеть как кадр из кино, а не как форма заказа.
+-->
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>qx · merch</title>
+<meta name="description" content="qx - quantum noir. Мерч для тех, кто пишет бэкенд ночью под дождём. Backend / genetics / quantum.">
+<meta name="theme-color" content="#08090c">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://m.qx.kg/">
+<meta property="og:title" content="qx · merch - quantum noir">
+<meta property="og:description" content="Тихий бунт для тех, кто пишет бэкенд ночью под дождём.">
+<meta property="og:image" content="https://b.qx.kg/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Payhip: чекаут + приём оплаты + POD-фулфилмент (Printful). кнопки ниже ведут в его checkout. -->
+<script type="text/javascript" src="https://payhip.com/payhip.js"></script>
+<style>
+  /* палитра наследуется с b.qx.kg, чтобы m выглядел как часть семьи */
+  [data-theme="light"]{--bg:#ffffff;--fg:#1a1a1a;--muted:#6b7280;--line:#e8e8e8;--card:#fafafa;--accent:#c2410c;--vignette:rgba(0,0,0,.05);--grain:.035;--mock:#f1efec}
+  [data-theme="dark"]{--bg:#08090c;--fg:#dfe1e4;--muted:#82868e;--line:#1a1d23;--card:#0e1013;--accent:#f4702f;--vignette:rgba(0,0,0,.78);--grain:.07;--mock:#15181d}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; position:relative; min-height:100vh; overflow-x:hidden;
+    background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Helvetica,Arial,sans-serif;
+    line-height:1.7; font-size:17px; -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+
+  /* атмосфера. та же, что на портфолио - зерно, виньетка, дождь, размытый свет */
+  .fx{position:fixed; inset:0; pointer-events:none; z-index:0}
+  .fx-rain{display:none}
+  .fx-vignette{background:radial-gradient(125% 125% at 50% 30%, transparent 48%, var(--vignette) 100%)}
+  .fx-grain{
+    opacity:var(--grain);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  [data-theme="dark"] .fx-rain{
+    display:block; opacity:.18;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='96'%3E%3Cg stroke='%23c7d2e6' stroke-width='1' stroke-linecap='round' stroke-opacity='0.45'%3E%3Cline x1='10' y1='2' x2='6' y2='48'/%3E%3Cline x1='30' y1='44' x2='26' y2='90'/%3E%3Cline x1='46' y1='10' x2='42' y2='56'/%3E%3Cline x1='60' y1='40' x2='56' y2='86'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:80px 120px; animation:rainA .7s linear infinite;
+  }
+  @keyframes rainA{ from{background-position:0 0} to{background-position:-80px 480px} }
+  @media (prefers-reduced-motion: reduce){ [data-theme="dark"] .fx-rain{animation:none} }
+  [data-theme="dark"] body{
+    background:
+      radial-gradient(70% 45% at 12% -8%, rgba(96,118,160,.12), transparent 60%),
+      radial-gradient(55% 40% at 100% 0%, rgba(244,112,47,.05), transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
+  }
+
+  .wrap{position:relative; z-index:1; max-width:980px; margin:0 auto; padding:24px 24px 96px}
+
+  /* верхняя строка: возврат в семью qx + переключатель языка */
+  .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:40px}
+  .home{color:var(--muted); font-size:13px; text-decoration:none; letter-spacing:.04em}
+  .home:hover{color:var(--accent)}
+  .langnav{display:flex; gap:6px}
+  .langnav button{
+    border:1px solid var(--line); background:transparent; color:var(--muted);
+    border-radius:999px; padding:5px 13px; font-size:13px; cursor:pointer; font-family:inherit; transition:.15s;
+  }
+  .langnav button:hover{color:var(--fg)}
+  .langnav button[aria-current="true"]{background:var(--fg); color:var(--bg); border-color:var(--fg)}
+
+  /* шапка-обложка магазина */
+  header{margin-bottom:8px}
+  .eyebrow{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); opacity:.85; margin:0 0 16px}
+  .brand{display:flex; align-items:center; gap:14px; margin:0 0 16px}
+  .wordmark{font-size:64px; font-weight:700; letter-spacing:-.04em; line-height:1; margin:0}
+  /* ember-точка - тот самый знак с h2::before на сайте, вынесен в графему бренда */
+  .ember{width:14px; height:14px; border-radius:50%; background:var(--accent); display:inline-block;
+    box-shadow:0 0 14px rgba(244,112,47,.7); flex:0 0 auto; align-self:flex-end; margin-bottom:14px}
+  [data-theme="dark"] .wordmark{text-shadow:0 1px 30px rgba(223,225,228,.07)}
+  .tagline{font-size:19px; color:var(--fg); margin:0 0 8px; max-width:560px}
+  .subline{font-size:15px; color:var(--muted); margin:0; max-width:560px}
+
+  /* строка дропа */
+  .dropline{display:flex; align-items:baseline; gap:12px; margin:54px 0 22px}
+  .dropline h2{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0; font-weight:600; display:flex; align-items:center}
+  [data-theme="dark"] .dropline h2::before{
+    content:""; display:inline-block; width:5px; height:5px; border-radius:50%;
+    background:var(--accent); margin-right:9px; box-shadow:0 0 8px rgba(244,112,47,.6); opacity:.85;
+  }
+  .dropline .hint{font-size:13px; color:var(--muted); margin-left:auto}
+
+  /* сетка товаров */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:18px}
+  .card{
+    border:1px solid var(--line); border-radius:16px; background:var(--card); overflow:hidden;
+    display:flex; flex-direction:column; transition:.18s; position:relative;
+  }
+  .card:hover{border-color:var(--accent); transform:translateY(-2px)}
+  .mockup{aspect-ratio:1/1; background:var(--mock); display:flex; align-items:center; justify-content:center; position:relative; border-bottom:1px solid var(--line)}
+  .mockup svg{width:74%; height:74%; display:block}
+  .badge{position:absolute; top:12px; left:12px; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:3px 9px; opacity:.9}
+  .body{padding:16px 16px 18px; display:flex; flex-direction:column; gap:6px; flex:1}
+  .pname{font-size:18px; font-weight:600; margin:0; letter-spacing:-.01em}
+  .pslogan{font-size:13px; color:var(--muted); margin:0; flex:1}
+  .prow{display:flex; align-items:center; justify-content:space-between; margin-top:12px; gap:10px}
+  .price{font-size:17px; font-weight:600}
+  .buy{
+    border:1px solid var(--accent); background:transparent; color:var(--accent);
+    border-radius:999px; padding:8px 18px; font-size:14px; cursor:pointer; font-family:inherit; transition:.15s; text-decoration:none; white-space:nowrap;
+  }
+  .buy:hover{background:var(--accent); color:#08090c}
+
+  /* как это работает / доставка */
+  .info{margin-top:64px; display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:22px}
+  .info .blk h3{font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; font-weight:600}
+  .info .blk p{font-size:14px; color:var(--muted); margin:0}
+  .note{margin-top:40px; font-size:13px; color:var(--muted); border:1px dashed var(--line); border-radius:12px; padding:14px 16px}
+
+  footer{margin-top:56px; padding-top:22px; border-top:1px solid var(--line); font-size:14px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px}
+  footer a{color:var(--muted); text-decoration:none}
+  footer a:hover{color:var(--accent)}
+  ::selection{background:var(--accent); color:#fff}
+  a{color:var(--accent); text-underline-offset:3px}
+
+  @media (max-width:520px){ .wordmark{font-size:48px} .tagline{font-size:17px} }
+</style>
+</head>
+<body>
+<div class="fx fx-rain"></div>
+<div class="fx fx-vignette"></div>
+<div class="fx fx-grain"></div>
+
+<div class="wrap">
+  <div class="topbar">
+    <a class="home" id="homelink" href="https://b.qx.kg/">← qx.kg</a>
+    <div class="langnav" id="langnav">
+      <button data-lang="ru">РУ</button>
+      <button data-lang="en">EN</button>
+      <button data-lang="zh">中文</button>
+    </div>
+  </div>
+
+  <header>
+    <p class="eyebrow" id="eyebrow"></p>
+    <div class="brand">
+      <h1 class="wordmark mono">qx</h1>
+      <span class="ember" aria-hidden="true"></span>
+    </div>
+    <p class="tagline" id="tagline"></p>
+    <p class="subline" id="subline"></p>
+  </header>
+
+  <div class="dropline">
+    <h2 id="drop_h"></h2>
+    <span class="hint" id="drop_hint"></span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="info" id="info"></div>
+
+  <div class="note" id="proto_note"></div>
+
+  <footer>
+    <span id="foot_rights"></span>
+    <span><a href="lookbook.html">lookbook</a> · <a href="https://b.qx.kg/">b.qx.kg</a> · <a href="https://a.qx.kg/">a.qx.kg</a> · <a href="https://qx.kg/">qx.kg</a></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // ── мокапы товаров. рисую силуэты в svg, чтобы витрина жила без фотографий.
+  //    позже заменим на реальные mockup-фото из POD (Printful/Gelato). ember-точка везде наша.
+  var EMBER='#f4702f', STK='currentColor';
+  function tee(){return '<svg viewBox="0 0 100 100" fill="none" stroke="'+STK+'" stroke-width="1.4" stroke-opacity=".55">\
+    <path d="M30 22 L20 30 L26 40 L31 36 L31 78 L69 78 L69 36 L74 40 L80 30 L70 22 L60 22 C60 28 40 28 40 22 Z"/>\
+    <circle cx="38" cy="44" r="2.4" fill="'+EMBER+'" stroke="none"/></svg>';}
+  function hoodie(){return '<svg viewBox="0 0 100 100" fill="none" stroke="'+STK+'" stroke-width="1.4" stroke-opacity=".55">\
+    <path d="M34 24 L20 32 L26 44 L32 40 L32 80 L68 80 L68 40 L74 44 L80 32 L66 24 C66 32 56 33 50 33 C44 33 34 32 34 24 Z"/>\
+    <path d="M40 24 C40 32 60 32 60 24" /><path d="M44 50 L44 64 L56 64 L56 50"/>\
+    <circle cx="39" cy="44" r="2.4" fill="'+EMBER+'" stroke="none"/></svg>';}
+  function sticker(){return '<svg viewBox="0 0 100 100" fill="none" stroke="'+STK+'" stroke-width="1.3" stroke-opacity=".5">\
+    <rect x="20" y="20" width="26" height="26" rx="5"/><rect x="54" y="20" width="26" height="26" rx="5"/>\
+    <rect x="20" y="54" width="26" height="26" rx="5"/><rect x="54" y="54" width="26" height="26" rx="5"/>\
+    <circle cx="33" cy="33" r="3" fill="'+EMBER+'" stroke="none"/>\
+    <path d="M61 30 q6 3 0 6 M73 30 q-6 3 0 6"/>\
+    <path d="M27 67 q3 -8 6 0 q3 8 6 0"/>\
+    <path d="M60 60 l8 14 M68 60 l-8 14"/></svg>';}
+  function mug(){return '<svg viewBox="0 0 100 100" fill="none" stroke="'+STK+'" stroke-width="1.4" stroke-opacity=".55">\
+    <rect x="28" y="32" width="36" height="40" rx="5"/>\
+    <path d="M64 40 h8 a7 7 0 0 1 0 18 h-8"/>\
+    <circle cx="37" cy="42" r="2.4" fill="'+EMBER+'" stroke="none"/>\
+    <path d="M36 60 h20" stroke-opacity=".3"/></svg>';}
+
+  var MOCK={tee:tee, hoodie:hoodie, sticker:sticker, mug:mug};
+
+  // ── PAYHIP: ключи товаров. ──────────────────────────────────────────────
+  //  как заполнить: в Payhip заводишь товар (физический, с POD/Printful),
+  //  жмёшь Share/Embed → Embed Button, копируешь ключ из ссылки payhip.com/b/КЛЮЧ
+  //  и вставляешь сюда напротив нужного id. пустая строка = кнопка-заглушка.
+  var PAYHIP={
+    "tee-qx":       "",   // напр. "RGsF"
+    "hoodie-chaos": "",
+    "tee-entropy":  "",
+    "tee-itworks":  "",
+    "stickers-lab": "",
+    "mug-night":    ""
+  };
+
+  // ── каталог. цены в USD (глобальная аудитория). mockup() позже заменим на фото из POD.
+  var PRODUCTS=[
+    { id:"tee-qx", shape:"tee", price:"$29",
+      name:{ru:"Футболка «qx·»", en:"Tee «qx·»", zh:"T恤「qx·」"},
+      slogan:{ru:"Моно-вордмарк и тлеющая точка. Минимализм, который не кричит.",
+              en:"Mono wordmark and an ember dot. Minimal, doesn't shout.",
+              zh:"等宽字标加余烬之点。低调，不喧哗。"} },
+    { id:"hoodie-chaos", shape:"hoodie", price:"$59", badge:"flagship",
+      name:{ru:"Худи «порядок из хаоса»", en:"Hoodie «order from chaos»", zh:"连帽衫「从混沌到秩序」"},
+      slogan:{ru:"Хаос частиц собирается в решётку. Трёхъязычно на всю спину.",
+              en:"A field of chaos resolves into a lattice. Trilingual, full back.",
+              zh:"一片混沌收拢成晶格。三语，整背。"} },
+    { id:"tee-entropy", shape:"tee", price:"$31", badge:"new",
+      name:{ru:"Тишка «entropy always wins»", en:"Tee «entropy always wins»", zh:"T恤「entropy always wins」"},
+      slogan:{ru:"Тёмный двойник флагмана: решётка рассыпается обратно в хаос.",
+              en:"The flagship's dark twin: the lattice decays back into chaos.",
+              zh:"旗舰的暗面：晶格重新崩解为混沌。"} },
+    { id:"tee-itworks", shape:"tee", price:"$29",
+      name:{ru:"Тишка «it works. I don't care.»", en:"Tee «it works. I don't care.»", zh:"T恤「it works. I don't care.」"},
+      slogan:{ru:"Мелко на рукаве. Цитата из комментария в исходниках qx.kg.",
+              en:"Small on the sleeve. Pulled from a comment in the qx.kg source.",
+              zh:"袖口小字。出自 qx.kg 源码里的一句注释。"} },
+    { id:"stickers-lab", shape:"sticker", price:"$9", badge:"easy entry",
+      name:{ru:"Стикерпак «qx lab»", en:"Sticker pack «qx lab»", zh:"贴纸包「qx lab」"},
+      slogan:{ru:"Q#-каламбуры, спираль ДНК, still in superposition. Дёшево и заразно.",
+              en:"Q# puns, a DNA helix, still in superposition. Cheap and contagious.",
+              zh:"Q# 双关、DNA 螺旋、still in superposition。便宜又上头。"} },
+    { id:"mug-night", shape:"mug", price:"$19",
+      name:{ru:"Кружка «night / rain / backend»", en:"Mug «night / rain / backend»", zh:"马克杯「night / rain / backend」"},
+      slogan:{ru:"Тёмная кружка, моно-текст по кругу. Товар про атмосферу.",
+              en:"Dark mug, mono text around it. An atmosphere object.",
+              zh:"深色杯身，环绕等宽字。一件关于氛围的物件。"} }
+  ];
+
+  var I18N={
+    ru:{ htmlLang:"ru", title:"qx · мерч", eyebrow:"qx · quantum noir · дроп 01",
+      tagline:"Тихий бунт для тех, кто пишет бэкенд ночью под дождём.",
+      subline:"Backend / genetics / quantum. И немного злости на мир - теперь на одежде.",
+      drop_h:"Дроп 01", drop_hint:"6 позиций · печать по заказу",
+      buy:"Купить", home:"← на qx.kg",
+      info:[ {h:"Печать по заказу", p:"Каждый предмет печатают и отправляют под твой заказ. Склада нет, лишнего тиража нет."},
+             {h:"Доставка по миру", p:"Отправка из ближайшего цеха печати. Сроки и цена - на шаге оплаты."},
+             {h:"Оплата картой", p:"Visa / Mastercard через защищённый checkout. Чек и трекинг - на почту."} ],
+      proto:"⚠ Прототип витрины. Оплата идёт через Payhip и заработает, как только впишешь ключи товаров в конфиг (PAYHIP в коде). Фото появятся после загрузки дизайнов в печать.",
+      rights:"© {year} qx" },
+    en:{ htmlLang:"en", title:"qx · merch", eyebrow:"qx · quantum noir · drop 01",
+      tagline:"A quiet rebellion for those who write backend at night, in the rain.",
+      subline:"Backend / genetics / quantum. And a bit of anger at the world - now on fabric.",
+      drop_h:"Drop 01", drop_hint:"6 pieces · print on demand",
+      buy:"Buy", home:"← back to qx.kg",
+      info:[ {h:"Print on demand", p:"Every piece is printed and shipped per order. No warehouse, no overstock."},
+             {h:"Worldwide shipping", p:"Shipped from the nearest print house. Time and cost shown at checkout."},
+             {h:"Card payment", p:"Visa / Mastercard via secure checkout. Receipt and tracking by email."} ],
+      proto:"⚠ Storefront prototype. Checkout runs through Payhip and goes live once you drop the product keys into the config (PAYHIP in the code). Photos arrive once the designs are uploaded for print.",
+      rights:"© {year} qx" },
+    zh:{ htmlLang:"zh", title:"qx · 周边", eyebrow:"qx · quantum noir · 第 01 弹",
+      tagline:"献给那些在雨夜写后端的人的一场安静叛逆。",
+      subline:"Backend / genetics / quantum。以及对世界的一点怒气--现在穿在身上。",
+      drop_h:"第 01 弹", drop_hint:"6 件 · 按需印制",
+      buy:"购买", home:"← 返回 qx.kg",
+      info:[ {h:"按需印制", p:"每件都按订单印制并发货。没有库存，没有多余的量。"},
+             {h:"全球配送", p:"从最近的印厂发出。时效与运费在结账时显示。"},
+             {h:"刷卡支付", p:"通过安全结账使用 Visa / Mastercard。收据与物流号发到邮箱。"} ],
+      proto:"⚠ 商店原型。结账通过 Payhip，把商品 key 填入代码中的 PAYHIP 配置后即可启用。设计上传印制后将替换为实拍图。",
+      rights:"© {year} qx" }
+  };
+
+  function year(){ return new Date().getFullYear(); }
+  function detect(){
+    var saved=null; try{ saved=localStorage.getItem("lang"); }catch(e){}
+    if(saved&&I18N[saved]) return saved;
+    var l=(navigator.language||navigator.userLanguage||"en").toLowerCase();
+    if(l.indexOf("ru")===0) return "ru";
+    if(l.indexOf("zh")===0) return "zh";
+    return "en";
+  }
+
+  function render(lang){
+    var t=I18N[lang];
+    document.documentElement.setAttribute("lang", t.htmlLang);
+    document.title=t.title;
+    document.getElementById("eyebrow").textContent=t.eyebrow;
+    document.getElementById("tagline").textContent=t.tagline;
+    document.getElementById("subline").textContent=t.subline;
+    document.getElementById("drop_h").textContent=t.drop_h;
+    document.getElementById("drop_hint").textContent=t.drop_hint;
+    document.getElementById("proto_note").textContent=t.proto;
+    document.getElementById("foot_rights").textContent=t.rights.replace("{year}",year());
+    document.getElementById("homelink").textContent=t.home;
+
+    var grid=document.getElementById("grid"); grid.innerHTML="";
+    PRODUCTS.forEach(function(p){
+      var card=document.createElement("div"); card.className="card";
+      var badge=p.badge?'<span class="badge">'+p.badge+'</span>':'';
+      // если ключ Payhip задан - настоящая кнопка checkout (overlay/redirect),
+      // иначе заглушка-прототип, которую перехватывает обработчик ниже.
+      var key=PAYHIP[p.id], buy;
+      if(key){
+        buy='<a class="buy payhip-buy-button" data-theme="none" data-product="'+key+'" '+
+            'href="https://payhip.com/b/'+key+'">'+t.buy+'</a>';
+      } else {
+        buy='<a class="buy" href="#" data-id="'+p.id+'">'+t.buy+'</a>';
+      }
+      card.innerHTML=
+        '<div class="mockup">'+badge+(MOCK[p.shape]?MOCK[p.shape]():'')+'</div>'+
+        '<div class="body">'+
+          '<p class="pname">'+p.name[lang]+'</p>'+
+          '<p class="pslogan">'+p.slogan[lang]+'</p>'+
+          '<div class="prow"><span class="price mono">'+p.price+'</span>'+buy+'</div>'+
+        '</div>';
+      grid.appendChild(card);
+    });
+
+    var info=document.getElementById("info"); info.innerHTML="";
+    t.info.forEach(function(b){
+      var d=document.createElement("div"); d.className="blk";
+      d.innerHTML='<h3>'+b.h+'</h3><p>'+b.p+'</p>'; info.appendChild(d);
+    });
+
+    document.querySelectorAll(".langnav button").forEach(function(b){
+      b.setAttribute("aria-current", b.getAttribute("data-lang")===lang?"true":"false");
+    });
+  }
+
+  function setLang(lang){ try{ localStorage.setItem("lang", lang); }catch(e){} render(lang); }
+  document.querySelectorAll(".langnav button").forEach(function(b){
+    b.addEventListener("click", function(){ setLang(b.getAttribute("data-lang")); });
+  });
+  // заглушка покупки - только для кнопок без ключа Payhip.
+  // настоящие .payhip-buy-button обрабатывает payhip.js (overlay) либо href (redirect).
+  document.getElementById("grid").addEventListener("click", function(e){
+    var a=e.target.closest(".buy"); if(!a) return;
+    if(a.classList.contains("payhip-buy-button")) return; // пропускаем в Payhip
+    e.preventDefault();
+    alert("Прототип: тут откроется оплата Payhip.\nВпиши ключ товара в конфиг PAYHIP, чтобы кнопка заработала.\nТовар: "+a.getAttribute("data-id"));
+  });
+
+  render(detect());
+})();
+</script>
+</body>
+</html>

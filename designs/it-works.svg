@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 250" fill="none">
+  <!-- terminal-comment typographic. quote from the qx.kg source. -->
+  <rect x="8" y="8" width="544" height="234" rx="16" stroke="#ECECEC" stroke-opacity=".3" stroke-width="2"/>
+  <circle cx="44" cy="44" r="6" fill="#ECECEC" opacity=".4"/>
+  <circle cx="66" cy="44" r="6" fill="#ECECEC" opacity=".4"/>
+  <circle cx="88" cy="44" r="6" fill="#F4702F"/>
+  <line x1="8" y1="68" x2="552" y2="68" stroke="#ECECEC" stroke-opacity=".15" stroke-width="1.5"/>
+  <text x="36" y="138" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="34" font-weight="600">
+    <tspan fill="#F4702F">//</tspan><tspan fill="#ECECEC"> it works.</tspan>
+  </text>
+  <text x="36" y="190" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="34" font-weight="600">
+    <tspan fill="#F4702F">//</tspan><tspan fill="#ECECEC"> I don't care.</tspan>
+  </text>
+  <rect x="382" y="162" width="16" height="34" fill="#F4702F"/>
+</svg>

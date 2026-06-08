@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 470" fill="none">
+  <!-- dark twin of the flagship. ordered lattice (left) decays into scattered particles (right). -->
+  <!-- ordered lattice (left) -->
+  <g stroke="#08090C" stroke-opacity=".28" stroke-width="1.5">
+    <line x1="90" y1="70"  x2="390" y2="70"/>
+    <line x1="90" y1="135" x2="390" y2="135"/>
+    <line x1="90" y1="200" x2="320" y2="200"/>
+    <line x1="90" y1="265" x2="390" y2="265"/>
+    <line x1="90"  y1="70" x2="90"  y2="265"/>
+    <line x1="165" y1="70" x2="165" y2="265"/>
+    <line x1="240" y1="70" x2="240" y2="265"/>
+    <line x1="315" y1="70" x2="315" y2="265"/>
+    <line x1="390" y1="70" x2="390" y2="200"/>
+  </g>
+  <g fill="#08090C">
+    <circle cx="90" cy="70"  r="4"/><circle cx="165" cy="70"  r="4"/><circle cx="240" cy="70"  r="4"/><circle cx="315" cy="70"  r="4"/><circle cx="390" cy="70"  r="4"/>
+    <circle cx="90" cy="135" r="4"/><circle cx="165" cy="135" r="4"/><circle cx="240" cy="135" r="4"/><circle cx="315" cy="135" r="4"/><circle cx="390" cy="135" r="4"/>
+    <circle cx="90" cy="200" r="4"/><circle cx="165" cy="200" r="4"/><circle cx="240" cy="200" r="4"/><circle cx="315" cy="200" r="4"/>
+    <circle cx="90" cy="265" r="4"/><circle cx="165" cy="265" r="4"/><circle cx="240" cy="265" r="4"/><circle cx="315" cy="265" r="4"/>
+  </g>
+  <!-- ember: last coherent node -->
+  <circle cx="390" cy="200" r="9" fill="#C2410C"/>
+  <!-- transition: drifting apart -->
+  <g fill="#08090C" opacity=".7">
+    <circle cx="470" cy="92"  r="4"/><circle cx="500" cy="208" r="3"/><circle cx="535" cy="150" r="4"/>
+    <circle cx="460" cy="262" r="3"/><circle cx="548" cy="248" r="3"/><circle cx="520" cy="108" r="3"/>
+  </g>
+  <!-- decay: scattered, fading particles (right) -->
+  <g fill="#08090C">
+    <circle cx="610" cy="80"  r="3" opacity=".55"/>
+    <circle cx="650" cy="160" r="2" opacity=".4"/>
+    <circle cx="630" cy="240" r="4" opacity=".5"/>
+    <circle cx="700" cy="110" r="2" opacity=".4"/>
+    <circle cx="720" cy="210" r="3" opacity=".45"/>
+    <circle cx="690" cy="270" r="2" opacity=".3"/>
+    <circle cx="770" cy="70"  r="3" opacity=".4"/>
+    <circle cx="800" cy="150" r="2" opacity=".3"/>
+    <circle cx="780" cy="240" r="2" opacity=".3"/>
+    <circle cx="850" cy="110" r="2" opacity=".25"/>
+    <circle cx="880" cy="200" r="3" opacity=".3"/>
+    <circle cx="910" cy="80"  r="2" opacity=".2"/>
+    <circle cx="940" cy="260" r="2" opacity=".2"/>
+    <circle cx="920" cy="150" r="2" opacity=".22"/>
+  </g>
+  <!-- faint ember ghost, dissolving -->
+  <circle cx="760" cy="200" r="5" fill="#C2410C" opacity=".35"/>
+
+  <text x="500" y="360" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="22"
+        letter-spacing="5" fill="#8A8F98">ЭНТРОПИЯ ВСЕГДА ПОБЕЖДАЕТ</text>
+  <text x="500" y="412" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="46" font-weight="700"
+        letter-spacing="2" fill="#08090C">ENTROPY ALWAYS WINS</text>
+  <text x="500" y="452" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="22"
+        letter-spacing="10" fill="#8A8F98">熵 总 是 会 赢</text>
+</svg>
